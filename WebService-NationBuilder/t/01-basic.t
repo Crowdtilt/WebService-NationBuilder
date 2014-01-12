@@ -11,9 +11,9 @@ my %params = map { (lc substr $_, 3) => $ENV{$_} } @ARGS;
 
 subtest 'get sites' => sub {
     my $nb = WebService::NationBuilder->new(%params);
-    diag Dumper $nb;
-    diag Dumper $nb->base_url;
-    diag Dumper $nb->request_url('sites');
+    #diag Dumper $nb;
+    #diag Dumper $nb->base_url;
+    diag Dumper $nb->get('sites');
     is 1 => 1;
 };
 

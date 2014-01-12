@@ -33,6 +33,33 @@ has base_url => (
     },
 );
 
+around qw(get) => sub {
+    my ($orig, $self, $path) = @_;
+    die 'Path is missing' unless $path;
+    my $url = $self->_request_url($path);
+    return $self->$orig($url, @_);
+};
+
+sub get {
+    my ($self, $path) = @_;
+    return $self->_req(GET $path);
+}
+
+sub _req {
+    my ($self, $req) = @_;
+    $req->header(authorization => ('Bearer '. $self->access_token));
+    $req->header(content_type => 'application/json');
+    $req->header(accept => 'application/json');
+    my $res = $self->ua->request($req);
+    my $retries = $self->retries;
+    while ($res->code =~ /^5/ and $retries--) {
+        sleep 1;
+        $res = $self->ua->request($req);
+    }
+    return undef if $res->code =~ /404|410/;
+    return $res->content ? from_json($res->content) : 1;
+}
+
 has ua => (
     is      => 'ro',
     lazy    => 1,
@@ -44,7 +71,7 @@ has ua => (
     },
 );
 
-sub request_url {
+sub _request_url {
     my ($self, $path) = @_;
     return $path =~ /^http/ ? $path : $self->base_url . '/' . $path;
 }

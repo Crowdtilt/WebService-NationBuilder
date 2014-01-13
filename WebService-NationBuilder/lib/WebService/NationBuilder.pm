@@ -10,10 +10,17 @@ has domain       => ( is => 'ro', default => 'nationbuilder.com' );
 has version      => ( is => 'ro', default => 'v1'                );
 
 has sites_uri    => ( is => 'ro', default => 'sites'             );
+has people_uri   => ( is => 'ro', default => 'people'            );
 
 sub get_sites {
     my ($self, $params) = @_;
-    return $self->get($self->sites_uri, $params);
+    return $self->get_all($self->sites_uri, $params);
 }
+
+sub get_people {
+    my ($self, $params) = @_;
+    return $self->get_all($self->people_uri, $params);
+}
+
 
 1;

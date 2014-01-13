@@ -26,10 +26,29 @@ has base_uri => (
 
 around qw(get put post) => sub {
     my ($orig, $self, $path, $params) = @_;
+    # TODO: scrub `page`, `total_pages`, `total` from querystring parameters
     die 'Path is missing' unless $path;
     my $uri = $self->_request_uri($path, $params);
     return $self->$orig($uri, @_);
 };
+
+sub get_all {
+    my ($self, $path, $params) = @_;
+    die 'Path is missing' unless $path;
+    my $uri = $self->_request_uri($path, $params);
+    my @results;
+    $params->{page} = 1;
+    my $total_pages = 1;
+    while ($params->{page} <= $total_pages) {
+        my $content = $self->_req(GET $uri);
+        $total_pages = $content->{total_pages};
+        $params->{page}++;
+        #if ($params->{page} <= $total_pages;
+        $uri = $self->_request_uri($path, $params);
+        push @results, $content->{results};
+    }
+    return @results;
+}
 
 sub get {
     my ($self, $uri) = @_;

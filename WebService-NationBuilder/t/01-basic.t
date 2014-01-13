@@ -32,8 +32,14 @@ _enable_logging;
 
 subtest 'get sites' => sub {
     my $nb = WebService::NationBuilder->new(%params);
+    #diag Dumper $nb->get_sites;
+    #diag Dumper $nb->get_sites({per_page => 100});
+    #diag Dumper $nb->get_people;
     diag Dumper $nb->get_sites;
-    diag Dumper $nb->get_sites({per_page => 100});
+    diag Dumper $nb->get_people;
+    #diag Dumper $nb->get_sites({per_page => 1});
+    #diag Dumper $nb->get_people({per_page => 1});
+
     is 1 => 1;
 };
 

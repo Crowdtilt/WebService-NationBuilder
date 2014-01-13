@@ -43,11 +43,10 @@ sub get_all {
         my $content = $self->_req(GET $uri);
         $total_pages = $content->{total_pages};
         $params->{page}++;
-        #if ($params->{page} <= $total_pages;
         $uri = $self->_request_uri($path, $params);
-        push @results, $content->{results};
+        push @results, @{$content->{results}};
     }
-    return @results;
+    return \@results;
 }
 
 sub get {

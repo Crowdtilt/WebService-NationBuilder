@@ -28,19 +28,18 @@ sub _enable_logging {
     );
 }
 
-_enable_logging;
+my $nb = WebService::NationBuilder->new(%params);
+#_enable_logging;
 
 subtest 'get sites' => sub {
-    my $nb = WebService::NationBuilder->new(%params);
-    #diag Dumper $nb->get_sites;
-    #diag Dumper $nb->get_sites({per_page => 100});
-    #diag Dumper $nb->get_people;
-    diag Dumper $nb->get_sites;
-    diag Dumper $nb->get_people;
-    #diag Dumper $nb->get_sites({per_page => 1});
-    #diag Dumper $nb->get_people({per_page => 1});
+    is $nb->get_sites->[0]{slug}, $params{subdomain},
+        'Nationbuilder slug matches subdomain';
 
-    is 1 => 1;
+    ok $nb->get_sites({per_page => 1}),
+        'Paginating with 1 page';
+
+    ok $nb->get_sites({per_page => 100}),
+        'Paginating with 100 pages';
 };
 
 

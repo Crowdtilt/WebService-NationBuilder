@@ -17,6 +17,11 @@ sub get_sites {
     return $self->get_all($self->sites_uri, $params);
 }
 
+sub get_person {
+    my ($self, $id) = @_;
+    return $self->get($self->people_uri . "/$id")->{person};
+}
+
 sub get_people {
     my ($self, $params) = @_;
     return $self->get_all($self->people_uri, $params);

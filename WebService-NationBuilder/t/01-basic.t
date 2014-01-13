@@ -33,14 +33,22 @@ my $page_txt = 'Paginating with %s page(s)';
 my @page_totals = (1, 10, 100, 1000);
 #_enable_logging;
 
-subtest 'get people' => sub {
+subtest 'get_person' => sub {
+    for (@{$nb->get_people}) {
+        cmp_bag [$nb->get_person($_->{id})], [superhashof($_)],
+            "Found matching person @{[$_->{id}]}"
+            or diag explain $_;
+    }
+};
+
+subtest 'get_people' => sub {
     for (@page_totals) {
         ok $nb->get_people({per_page => $_}),
             sprintf $page_txt, $_;
     }
 };
 
-subtest 'get sites' => sub {
+subtest 'get_sites' => sub {
     is $nb->get_sites->[0]{slug}, $params{subdomain},
         'Nationbuilder slug matches subdomain';
 

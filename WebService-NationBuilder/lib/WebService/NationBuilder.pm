@@ -12,8 +12,8 @@ has version      => ( is => 'ro', default => 'v1'                );
 has sites_uri    => ( is => 'ro', default => 'sites'             );
 
 sub get_sites {
-    my ($self) = @_;
-    return $self->get($self->sites_uri);
+    my ($self, $params) = @_;
+    return $self->get($self->sites_uri, $params);
 }
 
 1;

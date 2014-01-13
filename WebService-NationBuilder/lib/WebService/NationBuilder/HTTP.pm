@@ -14,7 +14,7 @@ has retries => (
     is      => 'ro',
     default => 0,
 );
-has base_url => (
+has base_uri => (
     is      => 'ro',
     lazy    => 1,
     default => sub {
@@ -25,25 +25,25 @@ has base_url => (
 );
 
 around qw(get put post) => sub {
-    my ($orig, $self, $path) = @_;
+    my ($orig, $self, $path, $params) = @_;
     die 'Path is missing' unless $path;
-    my $url = $self->_request_url($path);
-    return $self->$orig($url, @_);
+    my $uri = $self->_request_uri($path, $params);
+    return $self->$orig($uri, @_);
 };
 
 sub get {
-    my ($self, $path) = @_;
-    return $self->_req(GET $path);
+    my ($self, $uri) = @_;
+    return $self->_req(GET $uri);
 }
 
 sub post {
-    my ($self, $path, $params) = @_;
-    return $self->_req(POST $path, content => to_json $params);
+    my ($self, $uri, $params) = @_;
+    return $self->_req(POST $uri, content => to_json $params);
 }
 
 sub put {
-    my ($self, $path, $params) = @_;
-    return $self->_req(PUT $path, content => to_json $params);
+    my ($self, $uri, $params) = @_;
+    return $self->_req(PUT $uri, content => to_json $params);
 }
 
 sub _req {
@@ -74,9 +74,13 @@ has ua => (
     },
 );
 
-sub _request_url {
-    my ($self, $path) = @_;
-    return $path =~ /^http/ ? $path : $self->base_url . '/' . $path;
+
+
+sub _request_uri {
+    my ($self, $path, $params) = @_;
+    my $uri = URI->new($path =~ /^http/ ? $path : $self->base_uri . '/' . $path);
+    $uri->query_form(%{$params});
+    return $uri;
 }
 
 sub _log_request {

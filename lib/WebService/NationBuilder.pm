@@ -18,11 +18,24 @@ sub get_sites {
     return $self->get_all($self->sites_uri, $params);
 }
 
+sub create_person {
+    my ($self, $params) = @_;
+    my $person = $self->post($self->people_uri, {
+        person => $params });
+    return $person->{person} if $person;
+}
+
 sub get_person {
     my ($self, $id) = @_;
     croak 'The id param is missing' unless defined $id;
     my $person = $self->get($self->people_uri . "/$id");
     return $person->{person} if $person;
+}
+
+sub delete_person {
+    my ($self, $id) = @_;
+    croak 'The id param is missing' unless defined $id;
+    return $self->delete($self->people_uri . "/$id");
 }
 
 sub get_person_tags {

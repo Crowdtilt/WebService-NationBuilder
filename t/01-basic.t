@@ -33,7 +33,26 @@ my $page_txt = 'paginating with %s page(s)';
 my @page_totals = (1, 10, 100, 1000);
 my $max_id = 10000;
 my $test_tag = 'test_tag';
+my $test_user = {
+    first_name  => 'firstname',
+    last_name   => 'lastname',
+    email       => 'test@gmail.com',
+    phone       => '415-123-4567',
+    mobile      => '555-123-4567',
+};
+
 #_enable_logging;
+
+subtest 'create_person, delete_person' => sub {
+    my $cp = $nb->create_person($test_user);
+    cmp_deeply $test_user, subhashof($cp),
+        "create person @{[$cp->{id}]}"
+        or diag explain $cp;
+    ok $nb->delete_person($cp->{id}),
+        "delete person @{[$cp->{id}]}";
+    is $nb->get_person($cp->{id}) => undef,
+        "no person @{[$cp->{id}]}";
+};
 
 subtest 'set_tag, get_person_tags' => sub {
     for my $p (@{$nb->get_people}) {

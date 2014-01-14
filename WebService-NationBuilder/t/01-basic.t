@@ -34,6 +34,13 @@ my @page_totals = (1, 10, 100, 1000);
 my $max_id = 10000;
 #_enable_logging;
 
+subtest 'get_tags' => sub {
+    for (@page_totals) {
+        ok $nb->get_tags({per_page => $_}),
+            sprintf $page_txt, $_;
+    }
+};
+
 subtest 'match_person' => sub {
     for my $p (@{$nb->get_people}) {
         my $match_params = {};

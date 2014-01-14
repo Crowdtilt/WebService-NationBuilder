@@ -11,6 +11,7 @@ has version      => ( is => 'ro', default => 'v1'                );
 
 has sites_uri    => ( is => 'ro', default => 'sites'             );
 has people_uri   => ( is => 'ro', default => 'people'            );
+has tags_uri     => ( is => 'ro', default => 'tags'              );
 
 sub get_sites {
     my ($self, $params) = @_;
@@ -26,12 +27,18 @@ sub get_person {
 
 sub match_person {
     my ($self, $params) = @_;
+    # TODO: add params whitelist here
     return $self->get($self->people_uri . '/match', $params)->{person};
 }
 
 sub get_people {
     my ($self, $params) = @_;
     return $self->get_all($self->people_uri, $params);
+}
+
+sub get_tags {
+    my ($self, $params) = @_;
+    return $self->get_all($self->tags_uri, $params);
 }
 
 

@@ -25,6 +25,14 @@ sub create_person {
     return $person->{person} if $person;
 }
 
+sub update_person {
+    my ($self, $id, $params) = @_;
+    croak 'The id param is missing' unless defined $id;
+    my $person = $self->put($self->people_uri . "/$id", {
+        person => $params });
+    return $person->{person} if $person;
+}
+
 sub get_person {
     my ($self, $id) = @_;
     croak 'The id param is missing' unless defined $id;

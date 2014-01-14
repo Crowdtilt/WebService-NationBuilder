@@ -32,6 +32,7 @@ This module provides bindings for the [NationBuilder](https://www.nationbuilder.
 *  [get\_person](#get_person)
 *  [match\_person](#match_person)
 *  [create\_person](#create_person)
+*  [update\_person](#update_person)
 *  [delete\_person](#delete_person)
 *  [get\_tags](#get_tags)
 *  [get\_person\_tags](#get_person_tags)
@@ -248,6 +249,38 @@ create_person({
     mobile      => '555-123-4578',
     first_name  => 'Firstname',
     last_name   => 'Lastname',
+    created_at  => '2013-12-08T04:27:12-08:00',
+    updated_at  => '2013-12-24T12:03:51-08:00',
+    sex         => undef,
+    twitter_id  => undef,
+    primary_address => undef,
+}
+```
+
+## update\_person
+
+Update the person with the provided `id` to have the provided data, and return a full representation of the person who was updated.
+
+**Request:**
+```perl
+update_person(1, {
+    email       => 'test2@gmail.com',
+    phone       => '123-456-7890',
+    mobile      => '999-876-5432',
+    first_name  => 'Firstname2',
+    last_name   => 'Lastname2',
+});
+```
+
+**Response:**
+```perl
+{
+    id          => 1,
+    email       => 'test2@gmail.com'
+    phone       => '123-456-7890',
+    mobile      => '999-876-5432',
+    first_name  => 'Firstname2',
+    last_name   => 'Lastname2',
     created_at  => '2013-12-08T04:27:12-08:00',
     updated_at  => '2013-12-24T12:03:51-08:00',
     sex         => undef,

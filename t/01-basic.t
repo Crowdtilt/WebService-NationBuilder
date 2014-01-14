@@ -41,13 +41,20 @@ my $test_user = {
     mobile      => '555-123-4567',
 };
 
-_enable_logging;
+#_enable_logging;
 
-subtest 'create_person, delete_person' => sub {
+subtest 'create_person, update_person, delete_person' => sub {
     my $cp = $nb->create_person($test_user);
     cmp_deeply $test_user, subhashof($cp),
         "create person @{[$cp->{id}]}"
         or diag explain $cp;
+
+    $test_user->{email} = 'test2@gmail.com';
+    my $up = $nb->update_person($cp->{id}, $test_user);
+    cmp_deeply $test_user, subhashof($up),
+        "update person @{[$up->{id}]}"
+        or diag explain $up;
+
     ok $nb->delete_person($cp->{id}),
         "delete person @{[$cp->{id}]}";
     is $nb->get_person($cp->{id}) => undef,

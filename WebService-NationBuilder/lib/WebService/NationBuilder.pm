@@ -19,7 +19,14 @@ sub get_sites {
 
 sub get_person {
     my ($self, $id) = @_;
-    return $self->get($self->people_uri . "/$id")->{person};
+    croak 'The id param is missing' unless defined $id;
+    my $person = $self->get($self->people_uri . "/$id");
+    return $person->{person} if $person;
+}
+
+sub match_person {
+    my ($self, $params) = @_;
+    return $self->get($self->people_uri . '/match', $params)->{person};
 }
 
 sub get_people {

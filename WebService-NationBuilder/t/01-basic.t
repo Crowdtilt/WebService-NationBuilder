@@ -31,14 +31,21 @@ sub _enable_logging {
 my $nb = WebService::NationBuilder->new(%params);
 my $page_txt = 'Paginating with %s page(s)';
 my @page_totals = (1, 10, 100, 1000);
+my $max_id = 10000;
 #_enable_logging;
 
 subtest 'get_person' => sub {
     for (@{$nb->get_people}) {
         cmp_bag [$nb->get_person($_->{id})], [superhashof($_)],
-            "Found matching person @{[$_->{id}]}"
+            "found matching person @{[$_->{id}]}"
             or diag explain $_;
     }
+
+    dies_ok { $nb->get_person }
+        'id param missing';
+
+    is $nb->get_person($max_id) => undef,
+        "undefined person $max_id";
 };
 
 subtest 'get_people' => sub {
@@ -50,7 +57,7 @@ subtest 'get_people' => sub {
 
 subtest 'get_sites' => sub {
     is $nb->get_sites->[0]{slug}, $params{subdomain},
-        'Nationbuilder slug matches subdomain';
+        'nationbuilder slug matches subdomain';
 
     for (@page_totals) {
         ok $nb->get_sites({per_page => $_}),

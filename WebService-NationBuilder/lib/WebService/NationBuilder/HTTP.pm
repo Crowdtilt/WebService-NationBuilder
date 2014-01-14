@@ -4,6 +4,7 @@ use Moo::Role;
 use HTTP::Request::Common qw(GET POST PUT);
 use JSON qw(from_json to_json);
 use LWP::UserAgent;
+use List::Util qw(any pairgrep);
 use Log::Any qw($log);
 
 has timeout => (
@@ -24,19 +25,20 @@ has base_uri => (
     },
 );
 
-around qw(get put post) => sub {
+my @qs_params = qw(page per_page total_pages email
+                   first_name last_name phone mobile);
+
+around qw(get put post get_all) => sub {
     my ($orig, $self, $path, $params) = @_;
-    # TODO: scrub `page`, `total_pages`, `total` from querystring parameters
     die 'Path is missing' unless $path;
-    my $uri = $self->_request_uri($path, $params);
-    return $self->$orig($uri, @_);
+    return $self->$orig($path, $params, @_);
 };
 
 sub get_all {
     my ($self, $path, $params) = @_;
-    die 'Path is missing' unless $path;
     my $uri = $self->_request_uri($path, $params);
     my @results;
+    $params ||= {};
     $params->{page} = 1;
     my $total_pages = 1;
     while ($params->{page} <= $total_pages) {
@@ -50,18 +52,27 @@ sub get_all {
 }
 
 sub get {
-    my ($self, $uri) = @_;
+    my ($self, $path, $params) = @_;
+    my $uri = $self->_request_uri($path, $params);
     return $self->_req(GET $uri);
 }
 
 sub post {
-    my ($self, $uri, $params) = @_;
-    return $self->_req(POST $uri, content => to_json $params);
+    my ($self, $path, $body) = @_;
+    my $uri = $self->_request_uri($path);
+    return $self->_req(POST $uri, content => to_json $body);
 }
 
 sub put {
-    my ($self, $uri, $params) = @_;
-    return $self->_req(PUT $uri, content => to_json $params);
+    my ($self, $path, $body) = @_;
+    my $uri = $self->_request_uri($path);
+    return $self->_req(PUT $uri, content => to_json $body);
+}
+
+sub delete {
+    my ($self, $path) = @_;
+    my $uri = $self->_request_uri($path);
+    return $self->_req(DELETE $uri);
 }
 
 sub _req {
@@ -96,8 +107,12 @@ has ua => (
 
 sub _request_uri {
     my ($self, $path, $params) = @_;
-    my $uri = URI->new($path =~ /^http/ ? $path : $self->base_uri . '/' . $path);
-    $uri->query_form(%{$params});
+    my $uri = URI->new($path =~ /^http/
+        ? $path
+        : $self->base_uri . '/' . $path);
+    $uri->query_form(
+        pairgrep { any { $a eq $_ } @qs_params } %{$params}
+    ) if $params && ref $params eq 'HASHREF';
     return $uri;
 }
 

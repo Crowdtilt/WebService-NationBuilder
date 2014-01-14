@@ -41,5 +41,14 @@ sub get_tags {
     return $self->get_all($self->tags_uri, $params);
 }
 
+sub set_tag {
+    my ($self, $id, $tag) = @_;
+    croak 'The id param is missing' unless defined $id;
+    croak 'The tag param is missing' unless defined $tag;
+    my $tagging = $self->put($self->people_uri . "/$id/taggings", {
+        tagging => { tag => $tag },
+    });
+    return $tagging->{tagging} if $tagging;
+}
 
 1;

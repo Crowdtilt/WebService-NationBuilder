@@ -32,13 +32,28 @@ my $nb = WebService::NationBuilder->new(%params);
 my $page_txt = 'Paginating with %s page(s)';
 my @page_totals = (1, 10, 100, 1000);
 my $max_id = 10000;
+my $test_tag = 'test_tag';
 #_enable_logging;
+
+subtest 'set_tag' => sub {
+    for my $p (@{$nb->get_people}) {
+        my $t = $nb->set_tag($p->{id}, $test_tag);
+        cmp_bag [$t], [{ person_id => $p->{id}, tag => $test_tag }],
+            "set matching tag \"$test_tag\" for person @{[$p->{id}]}"
+            or diag explain $t;
+    }
+};
 
 subtest 'get_tags' => sub {
     for (@page_totals) {
         ok $nb->get_tags({per_page => $_}),
             sprintf $page_txt, $_;
     }
+
+    my $tags = $nb->get_tags;
+    cmp_bag $tags, [{name => $test_tag}],
+        "found common tag \"$test_tag\""
+        or diag explain $tags;
 };
 
 subtest 'match_person' => sub {

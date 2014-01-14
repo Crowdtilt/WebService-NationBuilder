@@ -41,7 +41,7 @@ my $test_user = {
     mobile      => '555-123-4567',
 };
 
-#_enable_logging;
+_enable_logging;
 
 subtest 'create_person, delete_person' => sub {
     my $cp = $nb->create_person($test_user);

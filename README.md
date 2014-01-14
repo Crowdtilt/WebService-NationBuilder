@@ -23,7 +23,20 @@ $nb->get_sites();
 
 This module provides bindings for the [NationBuilder](https://www.nationbuilder.com) API.
 
+
 # METHODS
+
+*  [new](#new)
+*  [get\_sites](#get_sites)
+*  [get\_people](#get_people)
+*  [get\_person](#get_person)
+*  [match\_person](#match_person)
+*  [create\_person](#create_person)
+*  [delete\_person](#delete_person)
+*  [get\_tags](#get_tags)
+*  [get\_person\_tags](#get_person_tags)
+*  [set\_tag](#set_tag)
+*  [delete\_tag](#delete_tag)
 
 ## new
 
@@ -211,6 +224,52 @@ match_person({
 }
 ```
 
+## create\_person
+
+Create a person with the provided data, and return a full representation of the person who was created.
+
+**Request:**
+```perl
+create_person({
+    email       => 'test@gmail.com',
+    phone       => '415-123-4567',
+    mobile      => '555-123-4567',
+    first_name  => 'Firstname',
+    last_name   => 'Lastname',
+});
+```
+
+**Response:**
+```perl
+{
+    id          => 1,
+    email       => 'test@gmail.com'
+    phone       => '415-123-4567',
+    mobile      => '555-123-4578',
+    first_name  => 'Firstname',
+    last_name   => 'Lastname',
+    created_at  => '2013-12-08T04:27:12-08:00',
+    updated_at  => '2013-12-24T12:03:51-08:00',
+    sex         => undef,
+    twitter_id  => undef,
+    primary_address => undef,
+}
+```
+
+## delete\_person
+
+Removes the person with the provided `id` from the nation.
+
+**Request:**
+```perl
+delete_person(1);
+```
+
+**Response:**
+```perl
+1
+```
+
 ## get\_tags
 
 Get the tags that have been used before in a nation.
@@ -235,7 +294,7 @@ get_tags({
 
 ## get\_person\_tags
 
-Gets a list of the tags for a given person.
+Gets a list of the tags for a given person with the provided `id`.
 
 **Request:**
 ```perl
@@ -256,7 +315,7 @@ get_person_tags(1);
 
 ## set\_tag
 
-Associates a tag to a given person.
+Associates a tag to a given person with the provided `id`.
 
 **Request:**
 ```perl
@@ -273,7 +332,7 @@ set_tag(1, 'tag3');
 
 ## delete\_tag
 
-Removes a tag from a given person.
+Removes a tag from a given person with the provided `id`.
 
 **Request:**
 ```perl

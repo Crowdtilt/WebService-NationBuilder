@@ -25,6 +25,13 @@ sub get_person {
     return $person->{person} if $person;
 }
 
+sub get_person_tags {
+    my ($self, $id) = @_;
+    croak 'The id param is missing' unless defined $id;
+    my $taggings = $self->get($self->people_uri . "/$id/taggings");
+    return $taggings->{taggings} if $taggings;
+}
+
 sub match_person {
     my ($self, $params) = @_;
     return $self->get($self->people_uri . '/match', $params)->{person};

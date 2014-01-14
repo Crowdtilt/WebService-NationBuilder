@@ -35,12 +35,17 @@ my $max_id = 10000;
 my $test_tag = 'test_tag';
 #_enable_logging;
 
-subtest 'set_tag' => sub {
+subtest 'set_tag, get_person_tags' => sub {
     for my $p (@{$nb->get_people}) {
-        my $t = $nb->set_tag($p->{id}, $test_tag);
-        cmp_bag [$t], [{ person_id => $p->{id}, tag => $test_tag }],
+        my $set_tag = $nb->set_tag($p->{id}, $test_tag);
+        my $expected_tag = { person_id => $p->{id}, tag => $test_tag };
+        cmp_bag [$set_tag], [$expected_tag],
             "set matching tag \"$test_tag\" for person @{[$p->{id}]}"
-            or diag explain $t;
+            or diag explain $set_tag;
+        my $get_person_tags = $nb->get_person_tags($p->{id});
+        cmp_bag $get_person_tags, [$expected_tag],
+            "got matching tag \"$test_tag\" for person @{[$p->{id}]}"
+            or diag explain $get_person_tags;
     }
 };
 

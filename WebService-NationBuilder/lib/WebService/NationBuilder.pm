@@ -57,4 +57,11 @@ sub set_tag {
     return $tagging->{tagging} if $tagging;
 }
 
+sub delete_tag {
+    my ($self, $id, $tag) = @_;
+    croak 'The id param is missing' unless defined $id;
+    croak 'The tag param is missing' unless defined $tag;
+    return $self->delete($self->people_uri . "/$id/taggings/$tag");
+}
+
 1;

@@ -1,7 +1,7 @@
 package WebService::NationBuilder::HTTP;
 use Moo::Role;
 
-use HTTP::Request::Common qw(GET POST PUT);
+use HTTP::Request::Common qw(GET POST PUT DELETE);
 use JSON qw(from_json to_json);
 use LWP::UserAgent;
 use List::Util qw(any pairgrep);
@@ -89,6 +89,7 @@ sub _req {
         $res = $self->ua->request($req);
     }
     return undef if $res->code =~ /404|410/;
+    return 1 if $res->code =~ /204/;
     return $res->content ? from_json($res->content) : 1;
 }
 

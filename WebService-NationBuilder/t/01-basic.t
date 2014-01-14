@@ -29,7 +29,7 @@ sub _enable_logging {
 }
 
 my $nb = WebService::NationBuilder->new(%params);
-my $page_txt = 'Paginating with %s page(s)';
+my $page_txt = 'paginating with %s page(s)';
 my @page_totals = (1, 10, 100, 1000);
 my $max_id = 10000;
 my $test_tag = 'test_tag';
@@ -39,12 +39,12 @@ subtest 'set_tag, get_person_tags' => sub {
     for my $p (@{$nb->get_people}) {
         my $set_tag = $nb->set_tag($p->{id}, $test_tag);
         my $expected_tag = { person_id => $p->{id}, tag => $test_tag };
-        cmp_bag [$set_tag], [$expected_tag],
-            "set matching tag \"$test_tag\" for person @{[$p->{id}]}"
+        cmp_deeply $set_tag, $expected_tag,
+            "set tag \"$test_tag\" for person @{[$p->{id}]}"
             or diag explain $set_tag;
         my $get_person_tags = $nb->get_person_tags($p->{id});
         cmp_bag $get_person_tags, [$expected_tag],
-            "got matching tag \"$test_tag\" for person @{[$p->{id}]}"
+            "get tag \"$test_tag\" for person @{[$p->{id}]}"
             or diag explain $get_person_tags;
     }
 };
@@ -55,10 +55,29 @@ subtest 'get_tags' => sub {
             sprintf $page_txt, $_;
     }
 
-    my $tags = $nb->get_tags;
-    cmp_bag $tags, [{name => $test_tag}],
+    my $all_tags = $nb->get_tags;
+    cmp_deeply $all_tags, superbagof({name => $test_tag}),
         "found common tag \"$test_tag\""
-        or diag explain $tags;
+        or diag explain $all_tags;
+};
+
+subtest 'delete_tag' => sub {
+    for my $p (@{$nb->get_people}) {
+        my $tags = $nb->get_person_tags($p->{id});
+        for my $tag (@$tags) {
+            ok $nb->delete_tag($p->{id}, $tag->{tag}),
+                "delete tag \"@{[$tag->{tag}]}\" for person @{[$p->{id}]}";
+        }
+        $tags = $nb->get_person_tags($p->{id});
+        cmp_bag $tags, [],
+            "get no tags for person @{[$p->{id}]}"
+            or diag explain $tags;
+    }
+
+    my $all_tags = $nb->get_tags;
+    cmp_deeply $all_tags, superbagof({name => $test_tag}),
+        "found common tag \"$test_tag\""
+        or diag explain $all_tags;
 };
 
 subtest 'match_person' => sub {
@@ -69,7 +88,7 @@ subtest 'match_person' => sub {
             $match_params->{$_} = $p->{$_} if $p->{$_};
         }
         my $mp = $nb->match_person($match_params);
-        cmp_bag [$mp], [superhashof($p)],
+        cmp_deeply $mp, superhashof($p),
             "found matching person @{[$p->{email}]}"
             or diag explain $mp;
     }
@@ -84,7 +103,7 @@ subtest 'match_person' => sub {
 subtest 'get_person' => sub {
     for my $p (@{$nb->get_people}) {
         my $mp = $nb->get_person($p->{id});
-        cmp_bag [$mp], [superhashof($p)],
+        cmp_deeply $mp, superhashof($p),
             "found identified person @{[$p->{id}]}"
             or diag explain $mp;
     }
@@ -112,7 +131,5 @@ subtest 'get_sites' => sub {
             sprintf $page_txt, $_;
     }
 };
-
-
 
 done_testing;

@@ -34,11 +34,32 @@ my @page_totals = (1, 10, 100, 1000);
 my $max_id = 10000;
 #_enable_logging;
 
+subtest 'match_person' => sub {
+    for my $p (@{$nb->get_people}) {
+        my $match_params = {};
+        my @matches = qw(email first_name last_name phone mobile);
+        for (@matches) {
+            $match_params->{$_} = $p->{$_} if $p->{$_};
+        }
+        my $mp = $nb->match_person($match_params);
+        cmp_bag [$mp], [superhashof($p)],
+            "found matching person @{[$p->{email}]}"
+            or diag explain $mp;
+    }
+
+    is $nb->match_person => undef,
+        'unmatched person undef';
+
+    is $nb->match_person({email => $max_id}) => undef,
+        "unmatched person $max_id";
+};
+
 subtest 'get_person' => sub {
-    for (@{$nb->get_people}) {
-        cmp_bag [$nb->get_person($_->{id})], [superhashof($_)],
-            "found matching person @{[$_->{id}]}"
-            or diag explain $_;
+    for my $p (@{$nb->get_people}) {
+        my $mp = $nb->get_person($p->{id});
+        cmp_bag [$mp], [superhashof($p)],
+            "found identified person @{[$p->{id}]}"
+            or diag explain $mp;
     }
 
     dies_ok { $nb->get_person }

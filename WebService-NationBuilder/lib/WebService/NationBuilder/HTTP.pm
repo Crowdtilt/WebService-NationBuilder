@@ -112,7 +112,7 @@ sub _request_uri {
         : $self->base_uri . '/' . $path);
     $uri->query_form(
         pairgrep { any { $a eq $_ } @qs_params } %{$params}
-    ) if $params && ref $params eq 'HASHREF';
+    ) if $params && ref $params eq 'HASH';
     return $uri;
 }
 

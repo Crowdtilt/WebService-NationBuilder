@@ -27,7 +27,6 @@ sub get_person {
 
 sub match_person {
     my ($self, $params) = @_;
-    # TODO: add params whitelist here
     return $self->get($self->people_uri . '/match', $params)->{person};
 }
 

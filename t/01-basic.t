@@ -52,8 +52,14 @@ subtest 'create_person, update_person, delete_person' => sub {
     $test_user->{email} = 'test2@gmail.com';
     my $up = $nb->update_person($cp->{id}, $test_user);
     cmp_deeply $test_user, subhashof($up),
-        "update person @{[$up->{id}]}"
+        "update person @{[$cp->{id}]}"
         or diag explain $up;
+
+    $test_user->{phone} = '999-876-5432';
+    my $pp = $nb->push_person($test_user);
+    cmp_deeply $test_user, subhashof($pp),
+        "push person @{[$cp->{id}]}"
+        or diag explain $pp;
 
     ok $nb->delete_person($cp->{id}),
         "delete person @{[$cp->{id}]}";

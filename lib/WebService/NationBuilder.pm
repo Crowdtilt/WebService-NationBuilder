@@ -96,4 +96,6 @@ sub delete_tag {
     return $self->http_delete($self->people_uri . "/$id/taggings/$tag");
 }
 
+# ABSTRACT: NationBuilder API bindings
+
 1;

@@ -3,7 +3,6 @@ use warnings;
 use Test::Most;
 
 use WebService::NationBuilder;
-use Carp qw(croak);
 use Log::Any::Adapter;
 use Log::Dispatch;
 

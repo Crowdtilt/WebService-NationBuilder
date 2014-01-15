@@ -43,7 +43,7 @@ my $test_user = {
 
 #_enable_logging;
 
-subtest 'create_person, update_person, delete_person' => sub {
+subtest 'Testing create_person, update_person, delete_person' => sub {
     my $cp = $nb->create_person($test_user);
     cmp_deeply $test_user, subhashof($cp),
         "create person @{[$cp->{id}]}"
@@ -67,7 +67,7 @@ subtest 'create_person, update_person, delete_person' => sub {
         "no person @{[$cp->{id}]}";
 };
 
-subtest 'set_tag, get_person_tags' => sub {
+subtest 'Testing set_tag, get_person_tags' => sub {
     for my $p (@{$nb->get_people}) {
         my $set_tag = $nb->set_tag($p->{id}, $test_tag);
         my $expected_tag = { person_id => $p->{id}, tag => $test_tag };
@@ -81,7 +81,7 @@ subtest 'set_tag, get_person_tags' => sub {
     }
 };
 
-subtest 'get_tags' => sub {
+subtest 'Testing get_tags' => sub {
     for (@page_totals) {
         ok $nb->get_tags({per_page => $_}),
             sprintf $page_txt, $_;
@@ -93,7 +93,7 @@ subtest 'get_tags' => sub {
         or diag explain $all_tags;
 };
 
-subtest 'delete_tag' => sub {
+subtest 'Testing delete_tag' => sub {
     for my $p (@{$nb->get_people}) {
         my $tags = $nb->get_person_tags($p->{id});
         for my $tag (@$tags) {
@@ -112,7 +112,7 @@ subtest 'delete_tag' => sub {
         or diag explain $all_tags;
 };
 
-subtest 'match_person' => sub {
+subtest 'Testing match_person' => sub {
     for my $p (@{$nb->get_people}) {
         my $match_params = {};
         my @matches = qw(email first_name last_name phone mobile);
@@ -132,7 +132,7 @@ subtest 'match_person' => sub {
         "unmatched person $max_id";
 };
 
-subtest 'get_person' => sub {
+subtest 'Testing get_person' => sub {
     for my $p (@{$nb->get_people}) {
         my $mp = $nb->get_person($p->{id});
         cmp_deeply $mp, superhashof($p),
@@ -147,14 +147,14 @@ subtest 'get_person' => sub {
         "undefined person $max_id";
 };
 
-subtest 'get_people' => sub {
+subtest 'Testing get_people' => sub {
     for (@page_totals) {
         ok $nb->get_people({per_page => $_}),
             sprintf $page_txt, $_;
     }
 };
 
-subtest 'get_sites' => sub {
+subtest 'Testing get_sites' => sub {
     is $nb->get_sites->[0]{slug}, $params{subdomain},
         'nationbuilder slug matches subdomain';
 

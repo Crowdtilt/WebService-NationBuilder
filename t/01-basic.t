@@ -8,7 +8,7 @@ use Log::Any::Adapter;
 use Log::Dispatch;
 
 my @ARGS = qw(NB_ACCESS_TOKEN NB_SUBDOMAIN);
-for (@ARGS) {croak "$_ not in ENV" unless defined $ENV{$_}};
+for (@ARGS) {plan skip_all => "$_ not in ENV" unless defined $ENV{$_}};
 my %params = map { (lc substr $_, 3) => $ENV{$_} } @ARGS;
 
 sub _enable_logging {

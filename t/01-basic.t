@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::Most;
 
 use WebService::NationBuilder;
@@ -62,7 +64,7 @@ subtest 'Testing create_person, update_person, delete_person' => sub {
 
     ok $nb->delete_person($cp->{id}),
         "delete person @{[$cp->{id}]}";
-    is $nb->get_person($cp->{id}) => undef,
+    is $nb->get_person($cp->{id}) => 0,
         "no person @{[$cp->{id}]}";
 };
 
@@ -142,8 +144,8 @@ subtest 'Testing get_person' => sub {
     dies_ok { $nb->get_person }
         'id param missing';
 
-    is $nb->get_person($max_id) => undef,
-        "undefined person $max_id";
+    is $nb->get_person($max_id) => 0,
+        "no person $max_id";
 };
 
 subtest 'Testing get_people' => sub {

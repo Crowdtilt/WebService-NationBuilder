@@ -1,11 +1,16 @@
 package WebService::NationBuilder::HTTP;
-use Moo::Role;
 
+use strict;
+use warnings;
+
+use Moo::Role;
 use HTTP::Request::Common qw(GET POST PUT DELETE);
 use JSON qw(from_json to_json);
 use LWP::UserAgent;
 use List::Util qw(any pairgrep);
 use Log::Any qw($log);
+use Carp qw(croak);
+use Try::Tiny;
 
 has timeout => (
     is      => 'ro',
@@ -28,13 +33,13 @@ has base_uri => (
 my @qs_params = qw(page per_page total_pages email
                    first_name last_name phone mobile);
 
-around qw(get put post get_all) => sub {
+around qw(http_get http_put http_post http_get_all) => sub {
     my ($orig, $self, $path, $params) = @_;
-    die 'Path is missing' unless $path;
+    croak 'Path is missing' unless $path;
     return $self->$orig($path, $params, @_);
 };
 
-sub get_all {
+sub http_get_all {
     my ($self, $path, $params) = @_;
     my $uri = $self->_request_uri($path, $params);
     my @results;
@@ -51,25 +56,25 @@ sub get_all {
     return \@results;
 }
 
-sub get {
+sub http_get {
     my ($self, $path, $params) = @_;
     my $uri = $self->_request_uri($path, $params);
     return $self->_req(GET $uri);
 }
 
-sub post {
+sub http_post {
     my ($self, $path, $body) = @_;
     my $uri = $self->_request_uri($path);
     return $self->_req(POST $uri, content => to_json $body);
 }
 
-sub put {
+sub http_put {
     my ($self, $path, $body) = @_;
     my $uri = $self->_request_uri($path);
     return $self->_req(PUT $uri, content => to_json $body);
 }
 
-sub delete {
+sub http_delete {
     my ($self, $path) = @_;
     my $uri = $self->_request_uri($path);
     return $self->_req(DELETE $uri);
@@ -84,12 +89,12 @@ sub _req {
     my $res = $self->ua->request($req);
     $self->_log_response($res);
     my $retries = $self->retries;
-    while ($res->code =~ /^5/ and $retries--) {
+    while ($res->code =~ /^5/x and $retries--) {
         sleep 1;
         $res = $self->ua->request($req);
     }
-    return undef if $res->code =~ /404|410/;
-    return 1 if $res->code =~ /204/;
+    return if $res->code =~ /404|410/x;
+    return 1 if $res->code =~ /204/x;
     return $res->content ? from_json($res->content) : 1;
 }
 
@@ -104,11 +109,9 @@ has ua => (
     },
 );
 
-
-
 sub _request_uri {
     my ($self, $path, $params) = @_;
-    my $uri = URI->new($path =~ /^http/
+    my $uri = URI->new($path =~ /^http/x
         ? $path
         : $self->base_uri . '/' . $path);
     $uri->query_form(
@@ -117,21 +120,32 @@ sub _request_uri {
     return $uri;
 }
 
+sub _log_content {
+    my ($self, $content) = @_;
+    if (length $content) {
+        try {
+            $content = to_json from_json $content;
+            $log->trace($content);
+        } catch {
+            $log->error('Invalid JSON: ' . $content);
+        }
+    }
+    return;
+}
+
 sub _log_request {
     my ($self, $req) = @_;
     $log->trace($req->method . ' => ' . $req->uri);
-    my $content = $req->content;
-    return unless length $content;
-    eval { $content = to_json from_json $content };
-    $log->trace($content);
+    _log_content $req->content;
+    return;
 }
 
 sub _log_response {
     my ($self, $res) = @_;
     $log->trace($res->status_line);
     my $content = $res->content;
-    eval { $content = to_json from_json $content };
-    $log->trace($content);
+    _log_content $res->content;
+    return;
 }
 
 1;

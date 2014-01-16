@@ -8,8 +8,8 @@ with 'WebService::NationBuilder::HTTP';
 
 use Carp qw(croak);
 
-has access_token => ( is => 'ro'                                 );
-has subdomain    => ( is => 'ro'                                 );
+has access_token => ( is => 'rw'                                 );
+has subdomain    => ( is => 'rw'                                 );
 has domain       => ( is => 'ro', default => 'nationbuilder.com' );
 has version      => ( is => 'ro', default => 'v1'                );
 

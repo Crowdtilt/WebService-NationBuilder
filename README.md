@@ -4,7 +4,7 @@ WebService::NationBuilder
 
 # VERSION
 
-version 0.0105
+version 0.0106
 
 # SYNOPSIS
 
@@ -21,7 +21,7 @@ $nb->get_sites();
 
 # DESCRIPTION
 
-This module provides bindings for the [NationBuilder](https://www.nationbuilder.com) API.
+This module provides bindings for the [NationBuilder](http://www.nationbuilder.com) API.
 
 
 # METHODS
@@ -70,7 +70,7 @@ Instantiates a new `WebService::NationBuilder` client object.
 
     *Optional*  
     The NationBuilder top-level domain to make API calls against.  
-    Defaults to [nationbuilder.com](nationbuilder.com).
+    Defaults to [nationbuilder.com](http://nationbuilder.com).
 
 - `'version'`
 

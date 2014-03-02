@@ -1,12 +1,10 @@
 package WebService::NationBuilder;
-
-use strict;
-use warnings;
 use Moo;
-
 with 'WebService::NationBuilder::HTTP';
 
 use Carp qw(croak);
+
+# VERSION
 
 has access_token => ( is => 'rw'                                 );
 has subdomain    => ( is => 'rw'                                 );

@@ -4,7 +4,7 @@ WebService::NationBuilder
 
 # VERSION
 
-version 0.0106
+version 0.0107
 
 # SYNOPSIS
 
